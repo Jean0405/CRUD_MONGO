@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { connectDB } from "../db/conexion.js";
 import { ObjectId } from "mongodb";
+import { limitGET } from "../middleware/limit.js";
 
 const PAIS = Router();
 let db = await connectDB();
@@ -8,16 +9,17 @@ let db = await connectDB();
 // const collections = await db.listCollections().toArray();
 // const bandera = collections.some((collection) => collection.name === "pais");
 // console.log(bandera);
+PAIS.use(limitGET());
 
 PAIS.post("/", async (req, res) => {
   const { nombre, ubicacion, poblacion } = req.body;
-
   const collection = db.collection("pais");
   await collection.insertOne({
     nombre: nombre,
     ubicacion: ubicacion,
     poblacion: poblacion,
   });
+  console.log(req.rateLimit);
   res.send("Nuevo país creado");
   try {
   } catch (error) {
@@ -31,6 +33,7 @@ PAIS.delete("/:id", async (req, res) => {
   const { id } = req.params;
   const collection = db.collection("pais");
   await collection.deleteOne({ _id: new ObjectId(id) });
+  console.log(req.rateLimit);
   res.send("El país ha sido borrado");
   try {
   } catch (error) {
