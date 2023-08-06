@@ -2,7 +2,7 @@ console.clear();
 import dotenv from "dotenv";
 import morgan from "morgan";
 import express from "express";
-import PAIS from "./routes/pais.js";
+import SUCURSAL from "./routes/pais.js";
 
 //CONFIGURACIÓN DE ENTORNO
 dotenv.config();
@@ -13,7 +13,7 @@ APP.use(express.json());
 APP.use(morgan("dev"));
 
 //RUTAS PRINCIPALES
-APP.use("/pais", PAIS);
+APP.use("/sucursal", SUCURSAL);
 
 //ESCUCHA DEL SERVIDOR
 const SERVER = JSON.parse(process.env.SERVER_CONFIG);

@@ -1,0 +1,605 @@
+//SE CREA COLECCIÓN DE SUCURSAL
+use("practica_mongo");
+db.createCollection("sucursal", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      title: "sucursal",
+      required: ["_id", "nombre", "direccion", "telefono"],
+      properties: {
+        _id: {
+          bsonType: "int",
+        },
+        nombre: {
+          bsonType: "string",
+        },
+        direccion: {
+          bsonType: "string",
+        },
+        telefono: {
+          bsonType: "string",
+          pattern: "^[0-9]{10}$",
+        },
+      },
+    },
+  },
+});
+
+//SE CREA COLECCIÓN DE AUTOMOVIL
+use("practica_mongo");
+db.createCollection("automovil", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      title: "automovil",
+      required: [
+        "_id",
+        "marca",
+        "modelo",
+        "anio",
+        "tipo",
+        "capacidad",
+        "precio_diario",
+      ],
+      properties: {
+        _id: {
+          bsonType: "int",
+        },
+        marca: {
+          bsonType: "string",
+        },
+        modelo: {
+          bsonType: "string",
+        },
+        anio: {
+          bsonType: "int",
+          minimum: 2000,
+          maximum: 2070,
+        },
+        tipo: {
+          bsonType: "string",
+          enum: ["Combustible", "Electrico"],
+        },
+        capacidad: { bsonType: "int" },
+        precio_diario: { bsonType: "number" },
+      },
+    },
+  },
+});
+use("practica_mongo");
+db.createCollection("sucursal_automovil", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      title: "automovil",
+      required: ["_id", "ID_sucursal", "ID_automovil", "cantidad_disponible"],
+      properties: {
+        _id: {
+          bsonType: "int",
+        },
+        ID_sucursal: {
+          bsonType: "int",
+        },
+        ID_automovil: {
+          bsonType: "int",
+        },
+        cantidad_disponible: {
+          bsonType: "int",
+        },
+      },
+    },
+  },
+});
+use("practica_mongo");
+db.createCollection("reserva");
+use("practica_mongo");
+db.createCollection("cliente");
+use("practica_mongo");
+db.createCollection("alquiler");
+use("practica_mongo");
+db.createCollection("registro_devolucion");
+use("practica_mongo");
+db.createCollection("empleado");
+
+// INGRESO SUCURSAL
+use("practica_mongo");
+db.sucursal.insertOne({
+  _id: 1,
+  nombre: "Zona Franca",
+  direccion: "Calle 25",
+  telefono: "3004097111",
+});
+
+use("practica_mongo");
+db.sucursal.insertOne({
+  _id: 2,
+  nombre: "Zona Central",
+  direccion: "Calle 27",
+  telefono: "3004097917",
+});
+
+//INGRESO AUTOMOVIL
+use("practica_mongo");
+db.automovil.insertOne({
+  _id: 1,
+  marca: "Audi",
+  modelo: "Serie S",
+  anio: 2023,
+  tipo: "Combustible",
+  capacidad: 5,
+  precio_diario: 250.45,
+});
+
+use("practica_mongo");
+db.automovil.insertOne({
+  _id: 2,
+  marca: "Ferrari",
+  modelo: "2024",
+  anio: 2023,
+  tipo: "Combustible",
+  capacidad: 2,
+  precio_diario: 2500.0,
+});
+
+//INGRESO SUCURSAL_AUTOMOVIL
+use("practica_mongo");
+db.sucursal_automovil.insertOne({
+  _id: 1,
+  ID_sucursal: 1,
+  ID_automovil: 1,
+  cantidad_disponible: 5,
+});
+
+use("practica_mongo");
+db.sucursal_automovil.insertOne({
+  _id: 2,
+  ID_sucursal: 1,
+  ID_automovil: 2,
+  cantidad_disponible: 1,
+});
+
+use("practica_mongo");
+db.sucursal_automovil.insertOne({
+  _id: 3,
+  ID_sucursal: 2,
+  ID_automovil: 1,
+  cantidad_disponible: 4,
+});
+
+use("practica_mongo");
+db.sucursal_automovil.insertOne({
+  _id: 4,
+  ID_sucursal: 2,
+  ID_automovil: 2,
+  cantidad_disponible: 3,
+});
+
+//INGRESO RESERVAS
+use("practica_mongo");
+db.reserva.insertOne({
+  _id: 1,
+  ID_cliente: 1005111222,
+  ID_automovil: 1,
+  fecha_reserva: "2023-11-16",
+  fecha_inicio: "2023-11-26",
+  fecha_fin: "2023-12-20",
+  estado: "PENDIENTE",
+});
+
+use("practica_mongo");
+db.reserva.insertOne({
+  _id: 2,
+  ID_cliente: 1005111222,
+  ID_automovil: 2,
+  fecha_reserva: "2022-02-10",
+  fecha_inicio: "2022-02-16",
+  fecha_fin: "2022-10-20",
+  estado: "PENDIENTE",
+});
+
+use("practica_mongo");
+db.cliente.insertOne({
+  _id: 1005111222,
+  nombre: "Sara",
+  apellido: "Angarita",
+  direccion: "Monterredondo calle 86",
+  telefono: "3224097916",
+  email: "sara@gmail.com",
+});
+
+//INGRESO DE ALQUILER
+use("practica_mongo");
+db.alquiler.insertOne({
+  _id: 1,
+  ID_cliente: 1005184201,
+  ID_automovil: 1,
+  fecha_inicio: "2023-11-23",
+  fecha_fin: "2023-11-25",
+  costo_total: 8500.0,
+  estado: "ACTIVO",
+});
+use("practica_mongo");
+db.alquiler.insertOne({
+  _id: 2,
+  ID_cliente: 1005184201,
+  ID_automovil: 2,
+  fecha_inicio: "2023-11-23",
+  fecha_fin: "2023-11-25",
+  costo_total: 80.0,
+  estado: "INACTIVO",
+});
+
+use("practica_mongo");
+db.alquiler.insertOne({
+  _id: 3,
+  ID_cliente: 1005184201,
+  ID_automovil: 2,
+  fecha_inicio: "2023-11-23",
+  fecha_fin: "2023-11-25",
+  costo_total: 8500.0,
+  estado: "DISPONIBLE",
+});
+
+// INGRESO REGISTRO DE DEVOLUCIÓN
+use("practica_mongo");
+db.registro_devolucion.insertOne({
+  _id: 1,
+  ID_alquiler: 1,
+  ID_empleado: 1005371571,
+  fecha_devolucion: "2023-11-26",
+  combustible_entregado: 4.5,
+  kilometraje_entregado: 35000,
+});
+
+//INGRESO DE EMPLEADOS
+use("practica_mongo");
+db.empleado.insertOne({
+  _id: 1005222334,
+  nombre: "Jonathan",
+  apellido: "Alvarez",
+  direccion: "La Victoria",
+  telefono: "300756231",
+  cargo: "GERENTE",
+});
+
+use("practica_mongo");
+db.empleado.insertOne({
+  _id: 1005371571,
+  nombre: "Akio",
+  apellido: "Diaz",
+  direccion: "Barrio Mutis",
+  telefono: "3224097916",
+  cargo: "VENDEDOR",
+});
+
+//EJEMPLO GTE (mayor o igual)
+use("practica_mongo");
+db.registro_devolucion.find({ kilometraje_entregado: { $gte: 31000 } });
+//EJEMPLO EQ (igual)
+use("practica_mongo");
+db.registro_devolucion.find({ kilometraje_entregado: { $eq: 35000 } });
+
+//EJEMPLO RELACIONAR 3 COLLECTIONS
+use("practica_mongo");
+db.getCollection("sucursal_automovil").aggregate([
+  {
+    $match: { _id: 1 },
+  },
+  {
+    $lookup: {
+      from: "sucursal",
+      localField: "ID_sucursal",
+      foreignField: "_id",
+      as: "automoviles_relacionados_fk",
+    },
+    $lookup: {
+      from: "automovil",
+      localField: "ID_automovil",
+      foreignField: "_id",
+      as: "detalles automoviles",
+    },
+  },
+]);
+
+//CONSULTAS DE PRACTICA
+
+//2. Listar todos los clientes
+use("practica_mongo");
+db.cliente.find();
+
+//3. Listar los automoviles disponibles
+use("practica_mongo");
+db.getCollection("alquiler").aggregate([
+  {
+    $match: { estado: "DISPONIBLE" },
+  },
+  {
+    $lookup: {
+      from: "automovil",
+      localField: "ID_automovil",
+      foreignField: "_id",
+      as: "Automoviles disponibles",
+    },
+  },
+]);
+
+//4. Listar los alquiler activos
+use("practica_mongo");
+db.getCollection("cliente").aggregate([
+  {
+    $lookup: {
+      from: "alquiler",
+      localField: "_id",
+      foreignField: "ID_cliente",
+      as: "Alquiler_activo",
+    },
+  },
+
+  {
+    $unwind: "$Alquiler_activo",
+  },
+  {
+    $match: { "Alquiler_activo.estado": { $eq: "ACTIVO" } },
+  },
+  // {
+  //   $project: {
+  //     ID_cliente: 0,
+  //     ID_automovil: 0,
+  //     "Alquiler_activo.email": 0,
+  //   },
+  // },
+  {
+    $group: {
+      _id: "$_id",
+      nombre: {
+        $first: "$nombre",
+      },
+      apellido: {
+        $first: "$apellido",
+      },
+      telefono: {
+        $first: "$telefono",
+      },
+      Alquiler_activo: { $push: "$Alquiler_activo" },
+    },
+  },
+]);
+
+// 5. Mostrar todas las reservas pendientes con los datos del cliente y el automovil reservado
+use("practica_mongo");
+db.getCollection("reserva").aggregate([
+  {
+    $match: { estado: "PENDIENTE" },
+  },
+  {
+    $lookup: {
+      from: "cliente",
+      localField: "ID_cliente",
+      foreignField: "_id",
+      as: "clientes",
+    },
+    $lookup: {
+      from: "automovil",
+      localField: "ID_automovil",
+      foreignField: "_id",
+      as: "detalles automoviles",
+    },
+  },
+]);
+
+// 6. Obtener los detalles del alquiler mediante ID especifico
+use("practica_mongo");
+db.alquiler.find({ _id: 2 });
+
+// 7. Obtener los empleados con el cargo de VENDEDOR
+use("practica_mongo");
+db.empleado.find({ cargo: "VENDEDOR" });
+
+//8. Obtener los automoviles disponibles en cada sucursal
+use("practica_mongo");
+db.getCollection("sucursal_automovil").aggregate([
+  {
+    $lookup: {
+      from: "sucursal",
+      localField: "ID_sucursal",
+      foreignField: "_id",
+      as: "sucursal_info",
+    },
+    $lookup: {
+      from: "automovil",
+      localField: "ID_automovil",
+      foreignField: "_id",
+      as: "automovil_info",
+    },
+  },
+
+  {
+    $unwind: "$sucursal_info",
+    $unwind: "$automovil_info",
+  },
+  {
+    $group: {
+      _id: "$ID_sucursal",
+      cantidad_total_automoviles: { $sum: "$cantidad_disponible" },
+    },
+  },
+]);
+
+// 9.  obtener el costo de un alquiler especifico
+use("practica_mongo");
+db.alquiler.find({ _id: 2 }, { costo_total: 1 });
+
+// 10.  Listar clientes con ID especifico
+use("practica_mongo");
+db.cliente.find({ _id: 1005184201 });
+
+// 11.  Listar vehiculos con capacidad de 5 o más
+use("practica_mongo");
+db.automovil.find({ capacidad: { $gte: 5 } });
+
+// 12.  Listar alquiler por fecha especifica
+use("practica_mongo");
+db.alquiler.find({ fecha_inicio: "2023-10-23" });
+
+// 13.  Listar las reservas pendientes de un cliente especifico
+use("practica_mongo");
+db.getCollection("reserva").aggregate([
+  {
+    $match: {
+      ID_cliente: 1005184201,
+      estado: "PENDIENTE",
+    },
+  },
+  {
+    $lookup: {
+      from: "cliente",
+      localField: "ID_cliente",
+      foreignField: "_id",
+      as: "cliente_info",
+    },
+  },
+  {
+    $unwind: "$cliente_info",
+  },
+  {
+    $lookup: {
+      from: "automovil",
+      localField: "ID_automovil",
+      foreignField: "_id",
+      as: "automovil_info",
+    },
+  },
+  {
+    $unwind: "$automovil_info",
+  },
+  // {
+  //   $project: {
+  //     "cliente_info.ID_cliente": 0,
+  //     "automovil_info.ID_automovil": 0,
+  //   },
+  // },
+  {
+    $group: {
+      _id: "$_id",
+      fecha_inicio: { $first: "$fecha_inicio" },
+      fecha_fin: { $first: "$fecha_fin" },
+      estado: { $first: "$estado" },
+      cliente_info: { $push: "$cliente_info" },
+      automovil_info: { $push: "$automovil_info" },
+    },
+  },
+]);
+
+/* 14.Mostrar los empleados con cargo de "Gerente" o "Asistente". */
+use("practica_mongo");
+db.empleado.find({
+  cargo: { $in: ["GERENTE", "ASISTENTE"] },
+});
+
+/* 15.Obtener los datos de los clientes que realizaron al menos un
+alquiler. */
+use("practica_mongo");
+db.cliente.aggregate([
+  {
+    $lookup: {
+      from: "alquiler",
+      localField: "_id",
+      foreignField: "ID_cliente",
+      as: "alquiler_info",
+    },
+  },
+  {
+    $match: { alquiler_info: { $ne: [] } },
+  },
+  {
+    $project: {
+      "alquiler_info.ID_cliente": 0,
+      "alquiler_info.ID_automovil": 0,
+      "alquiler_info.fecha_inicio": 0,
+      "alquiler_info.fecha_fin": 0,
+    },
+  },
+  {
+    $group: {
+      _id: "$_id",
+      nombre: { $first: "$nombre" },
+      apellido: { $first: "$apellido" },
+      telefono: { $first: "$telefono" },
+      email: { $first: "$email" },
+      alguiler_info: {
+        $push: "$alquiler_info",
+      },
+    },
+  },
+]);
+
+// 16.Listar todos los automóviles ordenados por marca y modelo.
+use("practica_mongo");
+db.automovil.find().sort({
+  marca: 1,
+  modelo: -1,
+});
+
+// 17.Mostrar la cantidad total de automóviles en cada sucursal junto con su dirección
+use("practica_mongo");
+db.getCollection("sucursal_automovil").aggregate([
+  {
+    $lookup: {
+      from: "sucursal",
+      localField: "ID_sucursal",
+      foreignField: "_id",
+      as: "sucursal_info",
+    },
+  },
+
+  {
+    $unwind: "$sucursal_info",
+  },
+  {
+    $group: {
+      _id: "$ID_sucursal",
+      cantidad_total_automoviles: { $sum: "$cantidad_disponible" },
+      direccion: { $first: "$sucursal_info.direccion" },
+    },
+  },
+]);
+
+// 18. Obtener la cantidad total de alquileres de la base de datos.
+use("practica_mongo");
+db.alquiler.countDocuments({});
+
+// 19.Mostrar los automóviles con capacidad igual a 5 personas y que estén disponibles.
+use("practica_mongo");
+db.alquiler.aggregate([
+  {
+    $lookup: {
+      from: "automovil",
+      localField: "ID_automovil",
+      foreignField: "_id",
+      as: "Alquiler_Info",
+    },
+  },
+  {
+    $match: {
+      estado: "INACTIVO",
+      "Alquiler_Info.capacidad": { $gte: 2 },
+    },
+  },
+  {
+    $project: {
+      _id: 1,
+      "Alquiler_Info.ID_automovil": 1,
+      "Alquiler_Info.marca": 1,
+      "Alquiler_Info.modelo": 1,
+      "Alquiler_Info.anio": 1,
+      "Alquiler_Info.tipo": 1,
+      "Alquiler_Info.capacidad": 1,
+      "Alquiler_Info.precio_diario": 1,
+      estado: 1,
+    },
+  },
+]);
+
+// 20.Listar los alquileres con fecha de inicio entre '2023-07-05' y '2023-07-10'.
+use("practica_mongo");
+db.alquiler.find({ fecha_inicio: { $gte: "2023-10-23", $lte: "2023-11-23" } });
