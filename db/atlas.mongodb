@@ -159,11 +159,125 @@ db.createCollection("cliente", {
 });
 
 use("practica_mongo");
-db.createCollection("alquiler");
+db.createCollection("alquiler", {
+  capped: true,
+  size: 1200,
+  max: 5,
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      title: "alquiler",
+      required: [
+        "ID_cliente",
+        "ID_automovil",
+        "fecha_inicio",
+        "fecha_fin",
+        "costo_total",
+        "estado",
+      ],
+      properties: {
+        ID_cliente: {
+          bsonType: "int",
+        },
+        ID_automovil: {
+          bsonType: "objectId",
+        },
+        fecha_inicio: {
+          bsonType: "string",
+          maxLength: 10,
+        },
+        fecha_fin: {
+          bsonType: "string",
+          maxLength: 10,
+        },
+        costo_total: {
+          bsonType: "number",
+        },
+        estado: {
+          bsonType: "string",
+        },
+      },
+    },
+  },
+});
+
 use("practica_mongo");
-db.createCollection("registro_devolucion");
+db.createCollection("registro_devolucion", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      title: "registro_devolucion",
+      required: [
+        "ID_alquiler",
+        "ID_empleado",
+        "fecha_devolucion",
+        "combustible_entregado",
+        "kilometraje_entregado",
+      ],
+      properties: {
+        ID_alquiler: {
+          bsonType: "objectId",
+          description: "ID_alquiler no es valido",
+        },
+        ID_empleado: {
+          bsonType: "int",
+          description: "ID_empleado no es valido",
+        },
+        fecha_devolucion: {
+          bsonType: "string",
+          description: "fecha_devolucion no es valido",
+        },
+        combustible_entregado: {
+          bsonType: "number",
+          description: "combustible_entregado no es valido",
+        },
+        kilometraje_entregado: {
+          bsonType: "number",
+          description: "kilometraje_entregado no es valido",
+        },
+      },
+    },
+  },
+});
 use("practica_mongo");
-db.createCollection("empleado");
+db.createCollection("empleado", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      title: "empleado",
+      required: ["nombre", "apellido", "DNI", "direccion", "telefono", "cargo"],
+      properties: {
+        nombre: {
+          bsonType: "string",
+          description: "nombre no es valido",
+        },
+        apellido: {
+          bsonType: "string",
+          description: "apellido no es valido",
+        },
+        DNI: {
+          bsonType: "int",
+          minimum: 1000000000,
+          maximum: 9999999999,
+          description: "DNI no es valido",
+        },
+        direccion: {
+          bsonType: "string",
+          description: "direccion no es valido",
+        },
+        telefono: {
+          bsonType: "string",
+          description: "telefono no es valido",
+        },
+        cargo: {
+          bsonType: "string",
+          enum: ["GERENTE", "VENDEDOR", "ASISTENTE"],
+          description: "cargo no es valido",
+        },
+      },
+    },
+  },
+});
 
 // INGRESO SUCURSAL
 use("practica_mongo");
@@ -293,53 +407,80 @@ db.cliente.insertOne({
 //INGRESO DE ALQUILER
 use("practica_mongo");
 db.alquiler.insertOne({
-  _id: 1,
-  ID_cliente: 1005184201,
-  ID_automovil: 1,
+  ID_cliente: 1005281402,
+  ID_automovil: ObjectId("64d15967f8e5fe62542e2adc"),
   fecha_inicio: "2023-11-23",
   fecha_fin: "2023-11-25",
-  costo_total: 8500.0,
+  costo_total: 8500,
   estado: "ACTIVO",
 });
+
 use("practica_mongo");
 db.alquiler.insertOne({
-  _id: 2,
-  ID_cliente: 1005184201,
-  ID_automovil: 2,
+  ID_cliente: 1005281401,
+  ID_automovil: ObjectId("64d15967f8e5fe62542e2adc"),
   fecha_inicio: "2023-11-23",
   fecha_fin: "2023-11-25",
-  costo_total: 80.0,
+  costo_total: 8500,
+  estado: "ACTIVO",
+});
+
+use("practica_mongo");
+db.alquiler.insertOne({
+  ID_cliente: 1005281401,
+  ID_automovil: ObjectId("64d15967f8e5fe62542e2adc"),
+  fecha_inicio: "2023-11-23",
+  fecha_fin: "2023-11-25",
+  costo_total: 8500,
+  estado: "DISṔONIBLE",
+});
+
+use("practica_mongo");
+db.alquiler.insertOne({
+  ID_cliente: 1005281402,
+  ID_automovil: ObjectId("64d15dd2b3de4e834d89b66f"),
+  fecha_inicio: "2023-11-23",
+  fecha_fin: "2023-11-25",
+  costo_total: 800,
   estado: "INACTIVO",
 });
 
 use("practica_mongo");
 db.alquiler.insertOne({
-  _id: 3,
-  ID_cliente: 1005184201,
-  ID_automovil: 2,
+  ID_cliente: 1005281401,
+  ID_automovil: ObjectId("64d15e48864bd00510f6ad16"),
   fecha_inicio: "2023-11-23",
   fecha_fin: "2023-11-25",
-  costo_total: 8500.0,
+  costo_total: 85000,
+  estado: "DISPONIBLE",
+});
+
+use("practica_mongo");
+db.alquiler.insertOne({
+  ID_cliente: 1005281402,
+  ID_automovil: ObjectId("64d15e48864bd00510f6ad16"),
+  fecha_inicio: "2023-10-23",
+  fecha_fin: "2023-11-31",
+  costo_total: 10,
   estado: "DISPONIBLE",
 });
 
 // INGRESO REGISTRO DE DEVOLUCIÓN
 use("practica_mongo");
 db.registro_devolucion.insertOne({
-  _id: 1,
-  ID_alquiler: 1,
+  ID_alquiler: ObjectId("64d15967f8e5fe62542e2adc"),
   ID_empleado: 1005371571,
   fecha_devolucion: "2023-11-26",
   combustible_entregado: 4.5,
-  kilometraje_entregado: 35000,
+  kilometraje_entregado: 35.6,
 });
 
 //INGRESO DE EMPLEADOS
 use("practica_mongo");
 db.empleado.insertOne({
-  _id: 1005222334,
   nombre: "Jonathan",
   apellido: "Alvarez",
+  DNI: 1005222334,
   direccion: "La Victoria",
   telefono: "300756231",
   cargo: "GERENTE",
@@ -347,9 +488,9 @@ db.empleado.insertOne({
 
 use("practica_mongo");
 db.empleado.insertOne({
-  _id: 1005371571,
   nombre: "Akio",
   apellido: "Diaz",
+  DNI: 1005371571,
   direccion: "Barrio Mutis",
   telefono: "3224097916",
   cargo: "VENDEDOR",
@@ -404,6 +545,11 @@ db.getCollection("alquiler").aggregate([
       as: "Automoviles disponibles",
     },
   },
+  {
+    $project: {
+      ID_automovil: 0,
+    },
+  },
 ]);
 
 //4. Listar los alquiler activos
@@ -424,13 +570,12 @@ db.getCollection("cliente").aggregate([
   {
     $match: { "Alquiler_activo.estado": { $eq: "ACTIVO" } },
   },
-  // {
-  //   $project: {
-  //     ID_cliente: 0,
-  //     ID_automovil: 0,
-  //     "Alquiler_activo.email": 0,
-  //   },
-  // },
+  {
+    $project: {
+      ID_cliente: 0,
+      "Alquiler_activo.ID_cliente": 0,
+    },
+  },
   {
     $group: {
       _id: "$_id",
@@ -439,6 +584,9 @@ db.getCollection("cliente").aggregate([
       },
       apellido: {
         $first: "$apellido",
+      },
+      DNI: {
+        $first: "$DNI",
       },
       telefono: {
         $first: "$telefono",
@@ -452,9 +600,6 @@ db.getCollection("cliente").aggregate([
 use("practica_mongo");
 db.getCollection("reserva").aggregate([
   {
-    $match: { estado: "PENDIENTE" },
-  },
-  {
     $lookup: {
       from: "cliente",
       localField: "ID_cliente",
@@ -465,7 +610,32 @@ db.getCollection("reserva").aggregate([
       from: "automovil",
       localField: "ID_automovil",
       foreignField: "_id",
-      as: "detalles automoviles",
+      as: "automoviles",
+    },
+  },
+  {
+    $match: { estado: "PENDIENTE" },
+  },
+  {
+    $group: {
+      _id: "$_id",
+      DNI_cliente: {
+        $first: "$ID_cliente",
+      },
+      fecha_reserva: {
+        $first: "$fecha_reserva",
+      },
+      fecha_inicio: {
+        $first: "$fecha_inicio",
+      },
+      fecha_fin: {
+        $first: "$fecha_fin",
+      },
+      estado: {
+        $first: "$estado",
+      },
+      detalles_cliente: { $push: "$clientes" },
+      detalles_automoviles: { $push: "$automoviles" },
     },
   },
 ]);
@@ -501,6 +671,12 @@ db.getCollection("sucursal_automovil").aggregate([
     $unwind: "$automovil_info",
   },
   {
+    $project: {
+      ID_sucursal: "$ID_sucursal",
+      cantidad_disponible: "$cantidad_disponible",
+    },
+  },
+  {
     $group: {
       _id: "$ID_sucursal",
       cantidad_total_automoviles: { $sum: "$cantidad_disponible" },
@@ -510,7 +686,10 @@ db.getCollection("sucursal_automovil").aggregate([
 
 // 9.  obtener el costo de un alquiler especifico
 use("practica_mongo");
-db.alquiler.find({ _id: 2 }, { costo_total: 1 });
+db.alquiler.find(
+  { _id: ObjectId("64d23e7bbedd3859cc3a27dd") },
+  { costo_total: 1 }
+);
 
 // 10.  Listar clientes con ID especifico
 use("practica_mongo");

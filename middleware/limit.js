@@ -1,6 +1,6 @@
 import rateLimit from "express-rate-limit";
 
-export const limitGET = () => {
+export const limitRequests = () => {
   return rateLimit({
     windowMs: 30 * 1000, // 30 segundos
     max: 5, // Limit each IP to 5 requests per `window` (here, per 30 seg)
