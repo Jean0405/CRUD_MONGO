@@ -1,15 +1,17 @@
+const { ObjectId } = require("mongodb");
+
 //SE CREA COLECCIÓN DE SUCURSAL
 use("practica_mongo");
 db.createCollection("sucursal", {
+  capped: true,
+  size: 1000,
+  max: 5,
   validator: {
     $jsonSchema: {
       bsonType: "object",
       title: "sucursal",
-      required: ["_id", "nombre", "direccion", "telefono"],
+      required: ["nombre", "direccion", "telefono"],
       properties: {
-        _id: {
-          bsonType: "int",
-        },
         nombre: {
           bsonType: "string",
         },
@@ -33,7 +35,6 @@ db.createCollection("automovil", {
       bsonType: "object",
       title: "automovil",
       required: [
-        "_id",
         "marca",
         "modelo",
         "anio",
@@ -42,9 +43,6 @@ db.createCollection("automovil", {
         "precio_diario",
       ],
       properties: {
-        _id: {
-          bsonType: "int",
-        },
         marca: {
           bsonType: "string",
         },
@@ -66,22 +64,21 @@ db.createCollection("automovil", {
     },
   },
 });
+
+//SE CREA LA COLECCIÓN PARA SURCURSAL AUTOMOVIL
 use("practica_mongo");
 db.createCollection("sucursal_automovil", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
       title: "automovil",
-      required: ["_id", "ID_sucursal", "ID_automovil", "cantidad_disponible"],
+      required: ["ID_sucursal", "ID_automovil", "cantidad_disponible"],
       properties: {
-        _id: {
-          bsonType: "int",
-        },
         ID_sucursal: {
-          bsonType: "int",
+          bsonType: "objectId",
         },
         ID_automovil: {
-          bsonType: "int",
+          bsonType: "objectId",
         },
         cantidad_disponible: {
           bsonType: "int",
@@ -90,10 +87,77 @@ db.createCollection("sucursal_automovil", {
     },
   },
 });
+
 use("practica_mongo");
-db.createCollection("reserva");
+db.createCollection("reserva", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      title: "reserva",
+      required: [
+        "ID_cliente",
+        "ID_automovil",
+        "fecha_reserva",
+        "fecha_inicio",
+        "fecha_fin",
+        "estado",
+      ],
+      properties: {
+        ID_cliente: {
+          bsonType: "int",
+        },
+        ID_automovil: {
+          bsonType: "objectId",
+        },
+        fecha_reserva: {
+          bsonType: "string",
+        },
+        fecha_inicio: {
+          bsonType: "string",
+        },
+        fecha_fin: {
+          bsonType: "string",
+        },
+        estado: {
+          bsonType: "string",
+        },
+      },
+    },
+  },
+});
+
 use("practica_mongo");
-db.createCollection("cliente");
+db.createCollection("cliente", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      title: "reserva",
+      required: ["nombre", "apellido", "DNI", "direccion", "telefono", "email"],
+      properties: {
+        nombre: {
+          bsonType: "string",
+        },
+        apellido: {
+          bsonType: "string",
+        },
+        DNI: {
+          bsonType: "int",
+        },
+        direccion: {
+          bsonType: "string",
+        },
+        telefono: {
+          bsonType: "string",
+        },
+        email: {
+          bsonType: "string",
+          pattern: "^[a-zA-Z0-9.]+@",
+        },
+      },
+    },
+  },
+});
+
 use("practica_mongo");
 db.createCollection("alquiler");
 use("practica_mongo");
@@ -104,7 +168,6 @@ db.createCollection("empleado");
 // INGRESO SUCURSAL
 use("practica_mongo");
 db.sucursal.insertOne({
-  _id: 1,
   nombre: "Zona Franca",
   direccion: "Calle 25",
   telefono: "3004097111",
@@ -112,7 +175,6 @@ db.sucursal.insertOne({
 
 use("practica_mongo");
 db.sucursal.insertOne({
-  _id: 2,
   nombre: "Zona Central",
   direccion: "Calle 27",
   telefono: "3004097917",
@@ -121,7 +183,6 @@ db.sucursal.insertOne({
 //INGRESO AUTOMOVIL
 use("practica_mongo");
 db.automovil.insertOne({
-  _id: 1,
   marca: "Audi",
   modelo: "Serie S",
   anio: 2023,
@@ -132,7 +193,6 @@ db.automovil.insertOne({
 
 use("practica_mongo");
 db.automovil.insertOne({
-  _id: 2,
   marca: "Ferrari",
   modelo: "2024",
   anio: 2023,
@@ -141,45 +201,60 @@ db.automovil.insertOne({
   precio_diario: 2500.0,
 });
 
+use("practica_mongo");
+db.automovil.insertOne({
+  marca: "Ford",
+  modelo: "Fiesta",
+  anio: 2018,
+  tipo: "Combustible",
+  capacidad: 4,
+  precio_diario: 340.0,
+});
+
+use("practica_mongo");
+db.automovil.insertOne({
+  marca: "Chevrolet",
+  modelo: "Camaro",
+  anio: 2015,
+  tipo: "Combustible",
+  capacidad: 2,
+  precio_diario: 3400.0,
+});
+
 //INGRESO SUCURSAL_AUTOMOVIL
 use("practica_mongo");
 db.sucursal_automovil.insertOne({
-  _id: 1,
-  ID_sucursal: 1,
-  ID_automovil: 1,
+  ID_sucursal: ObjectId("64d15917adaeb5caaae90796"),
+  ID_automovil: ObjectId("64d1595ee8565748d24644d9"),
   cantidad_disponible: 5,
 });
 
 use("practica_mongo");
 db.sucursal_automovil.insertOne({
-  _id: 2,
-  ID_sucursal: 1,
-  ID_automovil: 2,
+  ID_sucursal: ObjectId("64d15922c7da16c3cc740887"),
+  ID_automovil: ObjectId("64d15967f8e5fe62542e2adc"),
   cantidad_disponible: 1,
 });
 
 use("practica_mongo");
 db.sucursal_automovil.insertOne({
-  _id: 3,
-  ID_sucursal: 2,
-  ID_automovil: 1,
-  cantidad_disponible: 4,
+  ID_sucursal: ObjectId("64d15922c7da16c3cc740887"),
+  ID_automovil: ObjectId("64d15dd2b3de4e834d89b66f"),
+  cantidad_disponible: 7,
 });
 
 use("practica_mongo");
 db.sucursal_automovil.insertOne({
-  _id: 4,
-  ID_sucursal: 2,
-  ID_automovil: 2,
-  cantidad_disponible: 3,
+  ID_sucursal: ObjectId("64d15917adaeb5caaae90796"),
+  ID_automovil: ObjectId("64d15e48864bd00510f6ad16"),
+  cantidad_disponible: 7,
 });
 
 //INGRESO RESERVAS
 use("practica_mongo");
 db.reserva.insertOne({
-  _id: 1,
   ID_cliente: 1005111222,
-  ID_automovil: 1,
+  ID_automovil: ObjectId("64d1595ee8565748d24644d9"),
   fecha_reserva: "2023-11-16",
   fecha_inicio: "2023-11-26",
   fecha_fin: "2023-12-20",
@@ -188,9 +263,8 @@ db.reserva.insertOne({
 
 use("practica_mongo");
 db.reserva.insertOne({
-  _id: 2,
   ID_cliente: 1005111222,
-  ID_automovil: 2,
+  ID_automovil: ObjectId("64d15e48864bd00510f6ad16"),
   fecha_reserva: "2022-02-10",
   fecha_inicio: "2022-02-16",
   fecha_fin: "2022-10-20",
@@ -199,12 +273,21 @@ db.reserva.insertOne({
 
 use("practica_mongo");
 db.cliente.insertOne({
-  _id: 1005111222,
   nombre: "Sara",
   apellido: "Angarita",
+  DNI: 1005281402,
   direccion: "Monterredondo calle 86",
   telefono: "3224097916",
   email: "sara@gmail.com",
+});
+use("practica_mongo");
+db.cliente.insertOne({
+  nombre: "Jean",
+  apellido: "Angarita",
+  DNI: 1005281402,
+  direccion: "Monterredondo calle 80",
+  telefono: "3224097916",
+  email: "jean@gmail.com",
 });
 
 //INGRESO DE ALQUILER
@@ -329,7 +412,7 @@ db.getCollection("cliente").aggregate([
   {
     $lookup: {
       from: "alquiler",
-      localField: "_id",
+      localField: "DNI",
       foreignField: "ID_cliente",
       as: "Alquiler_activo",
     },
@@ -375,7 +458,7 @@ db.getCollection("reserva").aggregate([
     $lookup: {
       from: "cliente",
       localField: "ID_cliente",
-      foreignField: "_id",
+      foreignField: "DNI",
       as: "clientes",
     },
     $lookup: {
@@ -454,7 +537,7 @@ db.getCollection("reserva").aggregate([
     $lookup: {
       from: "cliente",
       localField: "ID_cliente",
-      foreignField: "_id",
+      foreignField: "DNI",
       as: "cliente_info",
     },
   },

@@ -42,7 +42,7 @@ SUCURSAL.put("/:id", async (req, res) => {
   const { id } = req.params;
   const collection = db.collection("sucursal");
   // await collection.deleteOne({ _id: new ObjectId(id) });
-  await collection.updateOne({ _id: id }, { $set: req.body });
+  await collection.updateOne({ _id: new ObjectId(id) }, { $set: req.body });
   res.send("La sucursal ha sido actualizada");
   try {
   } catch (error) {
@@ -56,8 +56,7 @@ SUCURSAL.put("/:id", async (req, res) => {
 SUCURSAL.delete("/:id", async (req, res) => {
   const { id } = req.params;
   const collection = db.collection("sucursal");
-  // await collection.deleteOne({ _id: new ObjectId(id) });
-  await collection.deleteOne({ _id: id });
+  await collection.deleteOne({ _id: new ObjectId(id) });
   res.send("La sucursal ha sido borrada");
   try {
   } catch (error) {
