@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { connectDB } from "../db/conexion.js";
-import { ObjectId } from "mongodb";
 import { limitRequests } from "../middleware/limit.js";
 import { validateJsonSize } from "../middleware/validarJson.js";
+import { ObjectId } from "mongodb";
 
 const SUCURSAL = Router();
 let db = await connectDB();
@@ -107,6 +107,43 @@ SUCURSAL.get("/automoviles_disponibles", async (req, res) => {
       message: "Error al eliminar una sucursal",
       error: error.message,
     });
+  }
+});
+
+//Mostrar la cantidad total de automóviles en cada sucursal junto con su dirección.
+SUCURSAL.get("/", async (req, res) => {
+  const collection = db.collection("sucursal");
+  const data = await collection
+    .aggregate([
+      {
+        $lookup: {
+          from: "sucursal",
+          localField: "_id",
+          foreignField: "ID_sucursal",
+          as: "Sucursal_Info",
+        },
+      },
+      {
+        $group: {
+          _id: "$ID_sucursal",
+          Cantidad_Total_Automoviles: { $sum: "$cantidad_disponible" },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          Sucursal: "$Sucursal_Info.nombre",
+          Cantidad_Total_Automoviles: 1,
+        },
+      },
+    ])
+    .toArray();
+  res.send(data);
+  try {
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al insertar una sucural", error: error.message });
   }
 });
 

@@ -693,7 +693,7 @@ db.alquiler.find(
 
 // 10.  Listar clientes con ID especifico
 use("practica_mongo");
-db.cliente.find({ _id: 1005184201 });
+db.cliente.find({ DNI: 1005281402 });
 
 // 11.  Listar vehiculos con capacidad de 5 o más
 use("practica_mongo");
@@ -705,11 +705,11 @@ db.alquiler.find({ fecha_inicio: "2023-10-23" });
 
 // 13.  Listar las reservas pendientes de un cliente especifico
 use("practica_mongo");
-db.getCollection("reserva").aggregate([
+db.reserva.aggregate([
   {
     $match: {
-      ID_cliente: 1005184201,
       estado: "PENDIENTE",
+      ID_cliente: 1005111222,
     },
   },
   {
@@ -717,37 +717,27 @@ db.getCollection("reserva").aggregate([
       from: "cliente",
       localField: "ID_cliente",
       foreignField: "DNI",
-      as: "cliente_info",
+      as: "Cliente_Info",
     },
   },
   {
-    $unwind: "$cliente_info",
+    $unwind: "$Cliente_Info",
   },
   {
     $lookup: {
       from: "automovil",
       localField: "ID_automovil",
       foreignField: "_id",
-      as: "automovil_info",
+      as: "Automovil_Info",
     },
   },
   {
-    $unwind: "$automovil_info",
+    $unwind: "$Automovil_Info",
   },
-  // {
-  //   $project: {
-  //     "cliente_info.ID_cliente": 0,
-  //     "automovil_info.ID_automovil": 0,
-  //   },
-  // },
   {
-    $group: {
-      _id: "$_id",
-      fecha_inicio: { $first: "$fecha_inicio" },
-      fecha_fin: { $first: "$fecha_fin" },
-      estado: { $first: "$estado" },
-      cliente_info: { $push: "$cliente_info" },
-      automovil_info: { $push: "$automovil_info" },
+    $project: {
+      "Cliente_Info._id": 0,
+      "Automovil_Info._id": 0,
     },
   },
 ]);
@@ -765,7 +755,7 @@ db.cliente.aggregate([
   {
     $lookup: {
       from: "alquiler",
-      localField: "_id",
+      localField: "DNI",
       foreignField: "ID_cliente",
       as: "alquiler_info",
     },
@@ -783,7 +773,7 @@ db.cliente.aggregate([
   },
   {
     $group: {
-      _id: "$_id",
+      _id: "$DNI",
       nombre: { $first: "$nombre" },
       apellido: { $first: "$apellido" },
       telefono: { $first: "$telefono" },
@@ -804,24 +794,26 @@ db.automovil.find().sort({
 
 // 17.Mostrar la cantidad total de automóviles en cada sucursal junto con su dirección
 use("practica_mongo");
-db.getCollection("sucursal_automovil").aggregate([
+db.sucursal_automovil.aggregate([
   {
     $lookup: {
       from: "sucursal",
-      localField: "ID_sucursal",
-      foreignField: "_id",
-      as: "sucursal_info",
+      localField: "_id",
+      foreignField: "ID_sucursal",
+      as: "Sucursal_Info",
     },
-  },
-
-  {
-    $unwind: "$sucursal_info",
   },
   {
     $group: {
       _id: "$ID_sucursal",
-      cantidad_total_automoviles: { $sum: "$cantidad_disponible" },
-      direccion: { $first: "$sucursal_info.direccion" },
+      Cantidad_Total_Automoviles: { $sum: "$cantidad_disponible" },
+    },
+  },
+  {
+    $project: {
+      _id: 1,
+      Sucursal: "$Sucursal_Info.nombre",
+      Cantidad_Total_Automoviles: 1,
     },
   },
 ]);

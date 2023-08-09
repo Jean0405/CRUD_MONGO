@@ -78,4 +78,34 @@ ALQUILER.get("/:id", async (req, res) => {
   }
 });
 
+ALQUILER.get("/fecha_inicio", async (req, res) => {
+  const { fecha_inicio } = req.body;
+  try {
+    const collection = db.collection("alquiler");
+    const data = await collection
+      .find({ fecha_inicio: fecha_inicio })
+      .toArray();
+    res.send(data);
+  } catch (error) {
+    es.status(500).json({
+      message: "Error al listar los alquiler",
+      error: error,
+    });
+  }
+});
+
+//Obtener la cantidad total de alquileres registrados en la base de datos.
+ALQUILER.get("/cantidad_alquieres", async (req, res) => {
+  try {
+    const collection = db.collection("alquiler");
+    const data = await collection.countDocuments().toArray();
+    res.send(data);
+  } catch (error) {
+    es.status(500).json({
+      message: "Error al listar los alquiler",
+      error: error,
+    });
+  }
+});
+
 export default ALQUILER;

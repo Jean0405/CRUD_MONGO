@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { connectDB } from "../db/conexion.js";
 import { limitRequests } from "../middleware/limit.js";
-import { ObjectId } from "mongodb";
 
 const EMPLEADO = Router();
 let db = await connectDB();
@@ -16,7 +15,24 @@ EMPLEADO.get("/vendedor", async (req, res) => {
     res.send(data);
   } catch (error) {
     es.status(500).json({
-      message: "Error al listar los alquiler",
+      message: "Error al listar los empleados",
+      error: error,
+    });
+  }
+});
+
+EMPLEADO.get("/cargos/GERENTE/ASISTENTE", async (req, res) => {
+  try {
+    const collection = db.collection("empleado");
+    const data = await collection
+      .find({
+        cargo: { $in: ["GERENTE", "ASISTENTE"] },
+      })
+      .toArray();
+    res.send(data);
+  } catch (error) {
+    es.status(500).json({
+      message: "Error al listar los empleados",
       error: error,
     });
   }
