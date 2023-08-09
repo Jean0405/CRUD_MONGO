@@ -78,6 +78,7 @@ ALQUILER.get("/:id", async (req, res) => {
   }
 });
 
+//Listar alquiler por fecha especifica
 ALQUILER.get("/fecha_inicio", async (req, res) => {
   const { fecha_inicio } = req.body;
   try {
@@ -89,7 +90,7 @@ ALQUILER.get("/fecha_inicio", async (req, res) => {
   } catch (error) {
     es.status(500).json({
       message: "Error al listar los alquiler",
-      error: error,
+      error: error.message,
     });
   }
 });
@@ -103,7 +104,68 @@ ALQUILER.get("/cantidad_alquieres", async (req, res) => {
   } catch (error) {
     es.status(500).json({
       message: "Error al listar los alquiler",
-      error: error,
+      error: error.message,
+    });
+  }
+});
+
+//Mostrar los automóviles con capacidad igual a 5 personas y que estén disponibles.
+ALQUILER.get("/disponible/capacidad/:capacidad", async (req, res) => {
+  const { capacidad } = req.params;
+  try {
+    const collection = db.collection("alquiler");
+    const data = await collection
+      .aggregate([
+        {
+          $lookup: {
+            from: "automovil",
+            localField: "ID_automovil",
+            foreignField: "_id",
+            as: "Alquiler_Info",
+          },
+        },
+        {
+          $match: {
+            estado: "DISPONIBLE",
+            "Alquiler_Info.capacidad": { $gte: capacidad },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            "Alquiler_Info.ID_automovil": 1,
+            "Alquiler_Info.marca": 1,
+            "Alquiler_Info.modelo": 1,
+            "Alquiler_Info.anio": 1,
+            "Alquiler_Info.tipo": 1,
+            "Alquiler_Info.capacidad": 1,
+            "Alquiler_Info.precio_diario": 1,
+            estado: 1,
+          },
+        },
+      ])
+      .toArray();
+    res.send(data);
+  } catch (error) {
+    es.status(500).json({
+      message: "Error al listar los alquiler",
+      error: error.message,
+    });
+  }
+});
+
+//Listar los alquileres con fecha de inicio entre '2023-07-05' y '2023-07-10'.
+ALQUILER.get("/fecha_inicio_rango", async (req, res) => {
+  try {
+    const collection = db.collection("alquiler");
+    const data = await collection
+      .find({ fecha_inicio: { $gte: "2023-07-05", $lte: "2023-07-10" } })
+      .toArray();
+    res.send(data);
+  } catch (error) {
+    es.status(500).json({
+      message: "Error al listar los alquiler",
+      error: error.message,
     });
   }
 });

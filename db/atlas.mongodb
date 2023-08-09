@@ -327,12 +327,12 @@ db.automovil.insertOne({
 
 use("practica_mongo");
 db.automovil.insertOne({
-  marca: "Chevrolet",
-  modelo: "Camaro",
-  anio: 2015,
-  tipo: "Combustible",
-  capacidad: 2,
-  precio_diario: 3400.0,
+  marca: "Tesla",
+  modelo: "XS",
+  anio: 2019,
+  tipo: "Electrico",
+  capacidad: 6,
+  precio_diario: 400.0,
 });
 
 //INGRESO SUCURSAL_AUTOMOVIL
@@ -407,12 +407,12 @@ db.cliente.insertOne({
 //INGRESO DE ALQUILER
 use("practica_mongo");
 db.alquiler.insertOne({
-  ID_cliente: 1005281402,
-  ID_automovil: ObjectId("64d15967f8e5fe62542e2adc"),
-  fecha_inicio: "2023-11-23",
-  fecha_fin: "2023-11-25",
-  costo_total: 8500,
-  estado: "ACTIVO",
+  ID_cliente: 1005281401,
+  ID_automovil: ObjectId("64d37c23e6f9c99e574b8018"),
+  fecha_inicio: "2023-07-10",
+  fecha_fin: "2023-08-20",
+  costo_total: 80,
+  estado: "DISPONIBLE",
 });
 
 use("practica_mongo");
@@ -835,8 +835,8 @@ db.alquiler.aggregate([
   },
   {
     $match: {
-      estado: "INACTIVO",
-      "Alquiler_Info.capacidad": { $gte: 2 },
+      estado: "DISPONIBLE",
+      "Alquiler_Info.capacidad": { $gte: 5 },
     },
   },
   {
@@ -856,4 +856,4 @@ db.alquiler.aggregate([
 
 // 20.Listar los alquileres con fecha de inicio entre '2023-07-05' y '2023-07-10'.
 use("practica_mongo");
-db.alquiler.find({ fecha_inicio: { $gte: "2023-10-23", $lte: "2023-11-23" } });
+db.alquiler.find({ fecha_inicio: { $gte: "2023-07-05", $lte: "2023-07-10" } });
