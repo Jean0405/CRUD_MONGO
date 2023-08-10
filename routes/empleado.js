@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { connectDB } from "../db/conexion.js";
-import { limitRequests } from "../middleware/limit.js";
+import { limitRequests } from "../helpers/limit.js";
 
 const EMPLEADO = Router();
 let db = await connectDB();

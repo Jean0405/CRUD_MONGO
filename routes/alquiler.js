@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { connectDB } from "../db/conexion.js";
-import { limitRequests } from "../middleware/limit.js";
+import { limitRequests } from "../helpers/limit.js";
 import { ObjectId } from "mongodb";
 
 const ALQUILER = Router();

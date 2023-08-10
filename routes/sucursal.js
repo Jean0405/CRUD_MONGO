@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { connectDB } from "../db/conexion.js";
-import { limitRequests } from "../middleware/limit.js";
+import { limitRequests } from "../helpers/limit.js";
+import { validateJsonSize } from "../helpers/validarJson.js";
 import { validateJsonSize } from "../middleware/validarJson.js";
 import { ObjectId } from "mongodb";
 
