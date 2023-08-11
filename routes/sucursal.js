@@ -2,8 +2,11 @@ import { Router } from "express";
 import { connectDB } from "../db/conexion.js";
 import { limitRequests } from "../helpers/limit.js";
 import { validateJsonSize } from "../helpers/validarJson.js";
-import { validateJsonSize } from "../middleware/validarJson.js";
 import { ObjectId } from "mongodb";
+import {
+  appMiddlewareSucursalVerify,
+  proxySucursal,
+} from "../middleware/proxySucursal.js";
 
 const SUCURSAL = Router();
 let db = await connectDB();
@@ -15,20 +18,26 @@ let db = await connectDB();
 SUCURSAL.use(validateJsonSize);
 SUCURSAL.use(limitRequests);
 
-SUCURSAL.post("/", async (req, res) => {
-  const collection = db.collection("sucursal");
-  await collection.insertOne(req.body);
-  console.log(req.rateLimit);
-  res.send({ message: "Nueva sucursal creado", info: req.body });
-  try {
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al insertar una sucural", error: error.message });
+SUCURSAL.post(
+  "/",
+  appMiddlewareSucursalVerify,
+  proxySucursal,
+  async (req, res) => {
+    const collection = db.collection("sucursal");
+    await collection.insertOne(req.body);
+    console.log(req.rateLimit);
+    res.send({ message: "Nueva sucursal creada", info: req.body });
+    try {
+    } catch (error) {
+      res.status(500).json({
+        message: "Error al insertar una sucural",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
-SUCURSAL.get("/", async (req, res) => {
+SUCURSAL.get("/", appMiddlewareSucursalVerify, async (req, res) => {
   try {
     const collection = db.collection("sucursal");
     const data = await collection.find().toArray();

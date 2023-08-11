@@ -12,7 +12,6 @@ import { GENERATE_TOKEN, VERIFY_TOKEN } from "./jwt/tokens.js";
 
 //CONFIGURACIÓN DE ENTORNO
 dotenv.config();
-
 //MIDDLEWARES
 const APP = express();
 APP.use(express.json());
@@ -23,7 +22,7 @@ APP.use("/token", GENERATE_TOKEN); //Este endpoints es el encargado de generar e
 APP.use("/cliente", VERIFY_TOKEN, CLIENTE);
 APP.use("/sucursal", VERIFY_TOKEN, SUCURSAL);
 APP.use("/automovil", VERIFY_TOKEN, AUTOMOVIL);
-APP.use("/alquiler", ALQUILER);
+APP.use("/alquiler", VERIFY_TOKEN, ALQUILER);
 APP.use("/reserva", VERIFY_TOKEN, RESERVA);
 APP.use("/empleado", VERIFY_TOKEN, EMPLEADO);
 
