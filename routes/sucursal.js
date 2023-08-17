@@ -116,7 +116,7 @@ SUCURSAL.get(
 );
 
 //Mostrar la cantidad total de automóviles en cada sucursal junto con su dirección.
-SUCURSAL.get("/", appMiddlewareSucursalVerify, async (req, res) => {
+SUCURSAL.get("/disponibles", appMiddlewareSucursalVerify, async (req, res) => {
   const collection = db.collection("sucursal");
   const data = await collection
     .aggregate([

@@ -76,6 +76,20 @@ ALQUILER.get("/:id", async (req, res) => {
   }
 });
 
+ALQUILER.get("/costo_total/:id", async (req, res) => {
+  try {
+    const collection = db.collection("alquiler");
+    const data = await collection
+      .find({ _id: ObjectId(req.params.id) }, { costo_total: 1 })
+      .toArray();
+    res.send(data);
+  } catch (error) {
+    es.status(500).json({
+      message: "Error al listar los alquiler",
+      error: error,
+    });
+  }
+});
 //Listar alquiler por fecha especifica
 ALQUILER.get("/fecha_inicio", appMiddlewareAlquilerVerify, async (req, res) => {
   const { fecha_inicio } = req.body;
