@@ -13,9 +13,9 @@ export class Sucursal {
     // @Transform(({ value }) => { if(value) return value ; else "Faker"})
     constructor(data) {
         Object.assign(this, data);
-        this.nombre = "x",
-            this.direccion = "x",
-            this.telefono = "x";
+        this.nombre = "x";
+        this.direccion = "x";
+        this.telefono = "x";
     }
 }
 __decorate([
