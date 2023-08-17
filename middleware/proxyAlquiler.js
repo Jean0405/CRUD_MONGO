@@ -2,18 +2,18 @@ import "reflect-metadata";
 import { plainToInstance, classToPlain } from "class-transformer";
 import { validate } from "class-validator";
 import { Router } from "express";
-import { Sucursal } from "../storage/controllers/sucursal.js";
+import { Alquiler } from "../storage/controllers/alquiler.js";
 
-const appMiddlewareSucursalVerify = Router();
-const proxySucursal = Router();
+const appMiddlewareAlquilerVerify = Router();
+const proxyAlquiler = Router();
 
-appMiddlewareSucursalVerify.use((req, res, next) => {
+appMiddlewareAlquilerVerify.use((req, res, next) => {
   if (!req.rateLimit) return;
   let { payload } = req.data;
   const { iat, exp, ...newPayload } = payload;
   payload = newPayload;
   let Clone = JSON.stringify(
-    classToPlain(plainToInstance(Sucursal, {}, { ignoreDecorators: true }))
+    classToPlain(plainToInstance(Alquiler, {}, { ignoreDecorators: true }))
   );
   let Verify = Clone === JSON.stringify(payload);
   !Verify
@@ -21,9 +21,9 @@ appMiddlewareSucursalVerify.use((req, res, next) => {
     : next();
 });
 
-proxySucursal.use(async (req, res, next) => {
+proxyAlquiler.use(async (req, res, next) => {
   try {
-    let data = plainToInstance(Sucursal, req.body);
+    let data = plainToInstance(Alquiler, req.body);
     await validate(data);
     req.body = JSON.parse(JSON.stringify(data));
     req.data = undefined;
@@ -33,4 +33,4 @@ proxySucursal.use(async (req, res, next) => {
   }
 });
 
-export { appMiddlewareSucursalVerify, proxySucursal };
+export { appMiddlewareAlquilerVerify, proxyAlquiler };
