@@ -1,13 +1,11 @@
 import { Router } from "express";
 import { connectDB } from "../db/conexion.js";
-import { limitRequests } from "../helpers/limit.js";
+import { appMiddlewareAutomovilVerify } from "../middleware/proxyAutomovil.js";
 
 const AUTOMOVIL = Router();
 let db = await connectDB();
 
-AUTOMOVIL.use(limitRequests);
-
-AUTOMOVIL.get("/", async (req, res) => {
+AUTOMOVIL.get("/", appMiddlewareAutomovilVerify, async (req, res) => {
   try {
     const collection = db.collection("automovil");
     const data = await collection
@@ -40,21 +38,25 @@ AUTOMOVIL.get("/", async (req, res) => {
 });
 
 //Mostrar todos los automóviles con una capacidad mayor a 5
-AUTOMOVIL.get("/capacidad=5", async (req, res) => {
-  try {
-    const collection = db.collection("automovil");
-    const data = await collection.find({ capacidad: { $gte: 5 } });
-    res.send(data);
-  } catch (error) {
-    es.status(500).json({
-      message: "Error al listar los automoviles",
-      error: error.message,
-    });
+AUTOMOVIL.get(
+  "/capacidad=5",
+  appMiddlewareAutomovilVerify,
+  async (req, res) => {
+    try {
+      const collection = db.collection("automovil");
+      const data = await collection.find({ capacidad: { $gte: 5 } });
+      res.send(data);
+    } catch (error) {
+      es.status(500).json({
+        message: "Error al listar los automoviles",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 // Listar todos los automóviles ordenados por marca y modelo.
-AUTOMOVIL.get("/sort", async (req, res) => {
+AUTOMOVIL.get("/sort", appMiddlewareAutomovilVerify, async (req, res) => {
   try {
     const collection = db.collection("automovil");
     const data = await collection.find().sort({

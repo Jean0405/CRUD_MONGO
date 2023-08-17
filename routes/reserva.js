@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { connectDB } from "../db/conexion.js";
-import { limitRequests } from "../helpers/limit.js";
+import {
+  appMiddlewareReservaVerify,
+  proxyReserva,
+} from "../middleware/proxyReserva.js";
 
 const RESERVA = Router();
 let db = await connectDB();
 
-RESERVA.use(limitRequests);
-
-RESERVA.get("/pendientes", async (req, res) => {
+RESERVA.get("/pendientes", appMiddlewareReservaVerify, async (req, res) => {
   try {
     const collection = db.collection("reserva");
     const data = await collection
@@ -63,55 +64,59 @@ RESERVA.get("/pendientes", async (req, res) => {
 });
 
 //Listar las reservas pendientes realizadas por un cliente especifico.
-RESERVA.get("/pendientes/:DNI", async (req, res) => {
-  const { DNI } = req.params;
-  try {
-    const collection = db.collection("reserva");
-    const data = await collection
-      .aggregate([
-        {
-          $match: {
-            estado: "PENDIENTE",
-            ID_cliente: DNI,
+RESERVA.get(
+  "/pendientes/:DNI",
+  appMiddlewareReservaVerify,
+  async (req, res) => {
+    const { DNI } = req.params;
+    try {
+      const collection = db.collection("reserva");
+      const data = await collection
+        .aggregate([
+          {
+            $match: {
+              estado: "PENDIENTE",
+              ID_cliente: DNI,
+            },
           },
-        },
-        {
-          $lookup: {
-            from: "cliente",
-            localField: "ID_cliente",
-            foreignField: "DNI",
-            as: "Cliente_Info",
+          {
+            $lookup: {
+              from: "cliente",
+              localField: "ID_cliente",
+              foreignField: "DNI",
+              as: "Cliente_Info",
+            },
           },
-        },
-        {
-          $unwind: "$Cliente_Info",
-        },
-        {
-          $lookup: {
-            from: "automovil",
-            localField: "ID_automovil",
-            foreignField: "_id",
-            as: "Automovil_Info",
+          {
+            $unwind: "$Cliente_Info",
           },
-        },
-        {
-          $unwind: "$Automovil_Info",
-        },
-        {
-          $project: {
-            "Cliente_Info._id": 0,
-            "Automovil_Info._id": 0,
+          {
+            $lookup: {
+              from: "automovil",
+              localField: "ID_automovil",
+              foreignField: "_id",
+              as: "Automovil_Info",
+            },
           },
-        },
-      ])
-      .toArray();
-    res.send(data);
-  } catch (error) {
-    es.status(500).json({
-      message: "Error al listar los automoviles",
-      error: error,
-    });
+          {
+            $unwind: "$Automovil_Info",
+          },
+          {
+            $project: {
+              "Cliente_Info._id": 0,
+              "Automovil_Info._id": 0,
+            },
+          },
+        ])
+        .toArray();
+      res.send(data);
+    } catch (error) {
+      es.status(500).json({
+        message: "Error al listar los automoviles",
+        error: error,
+      });
+    }
   }
-});
+);
 
 export default RESERVA;

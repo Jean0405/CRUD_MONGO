@@ -1,13 +1,11 @@
 import { Router } from "express";
 import { connectDB } from "../db/conexion.js";
-import { limitRequests } from "../helpers/limit.js";
+import { appMiddlewareClientesVerify } from "../middleware/proxyCliente.js";
 
 const CLIENTE = Router();
 let db = await connectDB();
 
-CLIENTE.use(limitRequests);
-
-CLIENTE.get("/", async (req, res) => {
+CLIENTE.get("/", appMiddlewareClientesVerify, async (req, res) => {
   try {
     const collection = db.collection("cliente");
     const data = await collection.find().toArray();
@@ -21,7 +19,7 @@ CLIENTE.get("/", async (req, res) => {
 });
 
 //LISTAR CLIENTES POR DNI ESPECIFICO
-CLIENTE.get("/:dni", async (req, res) => {
+CLIENTE.get("/:dni", appMiddlewareClientesVerify, async (req, res) => {
   const { dni } = req.params;
   try {
     const collection = db.collection("cliente");
@@ -36,7 +34,7 @@ CLIENTE.get("/:dni", async (req, res) => {
 });
 
 //Obtener los datos de los clientes que realizaron al menos un alquiler
-CLIENTE.get("/", async (req, res) => {
+CLIENTE.get("/", appMiddlewareClientesVerify, async (req, res) => {
   try {
     const collection = db.collection("cliente");
     const data = await collection

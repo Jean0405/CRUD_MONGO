@@ -1,7 +1,5 @@
 import { Router } from "express";
 import { connectDB } from "../db/conexion.js";
-import { limitRequests } from "../helpers/limit.js";
-import { validateJsonSize } from "../helpers/validarJson.js";
 import { ObjectId } from "mongodb";
 import {
   appMiddlewareSucursalVerify,
@@ -10,13 +8,6 @@ import {
 
 const SUCURSAL = Router();
 let db = await connectDB();
-
-// const collections = await db.listCollections().toArray();
-// const bandera = collections.some((collection) => collection.name === "pais");
-// console.log(bandera);
-
-SUCURSAL.use(validateJsonSize);
-SUCURSAL.use(limitRequests);
 
 SUCURSAL.post(
   "/",
@@ -50,7 +41,7 @@ SUCURSAL.get("/", appMiddlewareSucursalVerify, async (req, res) => {
   }
 });
 
-SUCURSAL.put("/:id", async (req, res) => {
+SUCURSAL.put("/:id", appMiddlewareSucursalVerify, async (req, res) => {
   const { id } = req.params;
   const collection = db.collection("sucursal");
   // await collection.deleteOne({ _id: new ObjectId(id) });
@@ -65,7 +56,7 @@ SUCURSAL.put("/:id", async (req, res) => {
   }
 });
 
-SUCURSAL.delete("/:id", async (req, res) => {
+SUCURSAL.delete("/:id", appMiddlewareSucursalVerify, async (req, res) => {
   const { id } = req.params;
   const collection = db.collection("sucursal");
   await collection.deleteOne({ _id: new ObjectId(id) });
@@ -79,49 +70,53 @@ SUCURSAL.delete("/:id", async (req, res) => {
   }
 });
 
-SUCURSAL.get("/automoviles_disponibles", async (req, res) => {
-  const collection = db.collection("sucursal");
-  const data = await collection
-    .aggregate([
-      {
-        $lookup: {
-          from: "sucursal",
-          localField: "ID_sucursal",
-          foreignField: "_id",
-          as: "sucursal_info",
+SUCURSAL.get(
+  "/automoviles_disponibles",
+  appMiddlewareSucursalVerify,
+  async (req, res) => {
+    const collection = db.collection("sucursal");
+    const data = await collection
+      .aggregate([
+        {
+          $lookup: {
+            from: "sucursal",
+            localField: "ID_sucursal",
+            foreignField: "_id",
+            as: "sucursal_info",
+          },
+          $lookup: {
+            from: "automovil",
+            localField: "ID_automovil",
+            foreignField: "_id",
+            as: "automovil_info",
+          },
         },
-        $lookup: {
-          from: "automovil",
-          localField: "ID_automovil",
-          foreignField: "_id",
-          as: "automovil_info",
-        },
-      },
 
-      {
-        $unwind: "$sucursal_info",
-        $unwind: "$automovil_info",
-      },
-      {
-        $group: {
-          _id: "$ID_sucursal",
-          cantidad_total_automoviles: { $sum: "$cantidad_disponible" },
+        {
+          $unwind: "$sucursal_info",
+          $unwind: "$automovil_info",
         },
-      },
-    ])
-    .toArray();
-  res.send(data);
-  try {
-  } catch (error) {
-    res.status(500).json({
-      message: "Error al eliminar una sucursal",
-      error: error.message,
-    });
+        {
+          $group: {
+            _id: "$ID_sucursal",
+            cantidad_total_automoviles: { $sum: "$cantidad_disponible" },
+          },
+        },
+      ])
+      .toArray();
+    res.send(data);
+    try {
+    } catch (error) {
+      res.status(500).json({
+        message: "Error al eliminar una sucursal",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 //Mostrar la cantidad total de automóviles en cada sucursal junto con su dirección.
-SUCURSAL.get("/", async (req, res) => {
+SUCURSAL.get("/", appMiddlewareSucursalVerify, async (req, res) => {
   const collection = db.collection("sucursal");
   const data = await collection
     .aggregate([
